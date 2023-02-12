@@ -11,7 +11,7 @@ Perform bulk actions on Docker resources.
 
 ```sh
 mkdir -p ~/.docker/cli-plugins/
-curl --proto '=https' --tlsv1.3 -o ~/.docker/cli-plugins/docker-bulk 'https://raw.githubusercontent.com/hectorm/docker-bulk/master/docker-bulk'
+curl --proto '=https' --tlsv1.3 -o ~/.docker/cli-plugins/docker-bulk 'https://raw.githubusercontent.com/hectorm/docker-bulk/v0.0.1/docker-bulk'
 chmod +x ~/.docker/cli-plugins/docker-bulk
 ```
 
@@ -19,7 +19,7 @@ chmod +x ~/.docker/cli-plugins/docker-bulk
 
 ```sh
 sudo mkdir -p /usr/local/lib/docker/cli-plugins/
-sudo curl --proto '=https' --tlsv1.3 -o /usr/local/lib/docker/cli-plugins/docker-bulk 'https://raw.githubusercontent.com/hectorm/docker-bulk/master/docker-bulk'
+sudo curl --proto '=https' --tlsv1.3 -o /usr/local/lib/docker/cli-plugins/docker-bulk 'https://raw.githubusercontent.com/hectorm/docker-bulk/v0.0.1/docker-bulk'
 sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-bulk
 ```
 

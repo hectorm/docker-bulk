@@ -10,7 +10,7 @@ if [ "${1-}" = 'docker-cli-plugin-metadata' ]; then
 		{
 			"SchemaVersion": "0.1.0",
 			"Vendor": "@hectorm",
-			"Version": "0.0.0",
+			"Version": "0.0.1",
 			"ShortDescription": "Perform bulk actions on Docker resources",
 			"URL": "https://github.com/hectorm/docker-bulk"
 		}
