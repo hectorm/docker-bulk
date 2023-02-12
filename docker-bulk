@@ -1,0 +1,93 @@
+#!/bin/sh
+
+set -eu
+export LC_ALL=C
+
+PLUGIN=${0##*/docker-}
+
+if [ "${1-}" = 'docker-cli-plugin-metadata' ]; then
+	cat <<-'EOF'
+		{
+			"SchemaVersion": "0.1.0",
+			"Vendor": "@hectorm",
+			"Version": "0.0.0",
+			"ShortDescription": "Perform bulk actions on Docker resources",
+			"URL": "https://github.com/hectorm/docker-bulk"
+		}
+	EOF
+	exit 0
+fi
+
+if [ "${1-}" = "${PLUGIN:?}" ]; then
+	shift
+fi
+
+main() {
+	RESOURCE=${1-}
+	FILTER=${2-}
+
+	if ! command -v jq >/dev/null 2>&1; then
+		printf '%s\n' 'jq is not installed' >&2
+		exit 1
+	fi
+
+	if [ -z "${RESOURCE-}" ] || [ "${RESOURCE:?}" = 'help' ] || [ -z "${FILTER-}" ]; then
+		printf '%s\n' "$(cat <<-EOF
+			Usage: docker ${PLUGIN:?} RESOURCE FILTER [COMMAND]
+
+			Perform bulk actions on Docker resources
+		EOF
+		)"
+		exit 0
+	fi
+
+	case "${RESOURCE:?}" in
+		image|network|plugin)
+			ids=$(docker "${RESOURCE:?}" ls --format '{{.ID}}')
+			selector='.Id'
+			;;
+		container)
+			ids=$(docker "${RESOURCE:?}" ls --format '{{.ID}}' --all)
+			selector='.Id'
+			;;
+		volume|context)
+			ids=$(docker "${RESOURCE:?}" ls --format '{{.Name}}')
+			selector='.Name'
+			;;
+		*)
+			printf '%s\n' "Unknown resource: ${RESOURCE:?}" >&2
+			exit 1
+			;;
+	esac
+
+	if [ -z "${ids?}" ]; then
+		exit 0
+	fi
+
+	set -f; _IFS="${IFS?}"; IFS="$(printf '\nx')"; IFS="${IFS%x}"
+	# shellcheck disable=SC2086
+	filtered_ids=$(docker "${RESOURCE:?}" inspect --format json ${ids:?} | jq -r \
+		--argjson MINUTE '60' \
+		--argjson HOUR '3600' \
+		--argjson DAY '86400' \
+		--argjson MONTH '2628000' \
+		--argjson YEAR '31560000' \
+		--argjson KB '1000' \
+		--argjson MB '1000000' \
+		--argjson GB '1000000000' \
+		".[] | select(${FILTER:?}) | ${selector:?}")
+	set +f; IFS="${_IFS?}"
+
+	shift 2
+	if [ "${#}" = 0 ]; then
+		set -- printf '%s\n'
+	fi
+
+	for id in ${filtered_ids?}; do
+		"${@-}" "${id:?}" || RET=${?}
+	done
+
+	exit "${RET:-0}"
+}
+
+main "${@-}"
