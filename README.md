@@ -10,15 +10,15 @@ Perform bulk actions on Docker resources.
 ### Current user
 
 ```sh
-mkdir -p ~/.docker/cli-plugins/
-curl --proto '=https' --tlsv1.3 -o ~/.docker/cli-plugins/docker-bulk 'https://raw.githubusercontent.com/hectorm/docker-bulk/v0.0.1/docker-bulk'
-chmod +x ~/.docker/cli-plugins/docker-bulk
+[ -n "$DOCKER_CONFIG" ] || export DOCKER_CONFIG="$HOME"/.docker; mkdir -p "$DOCKER_CONFIG"/cli-plugins
+curl --proto '=https' --tlsv1.3 -o "$DOCKER_CONFIG"/cli-plugins/docker-bulk 'https://raw.githubusercontent.com/hectorm/docker-bulk/v0.0.1/docker-bulk'
+chmod +x "$DOCKER_CONFIG"/cli-plugins/docker-bulk
 ```
 
 ### System-wide
 
 ```sh
-sudo mkdir -p /usr/local/lib/docker/cli-plugins/
+sudo mkdir -p /usr/local/lib/docker/cli-plugins
 sudo curl --proto '=https' --tlsv1.3 -o /usr/local/lib/docker/cli-plugins/docker-bulk 'https://raw.githubusercontent.com/hectorm/docker-bulk/v0.0.1/docker-bulk'
 sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-bulk
 ```
