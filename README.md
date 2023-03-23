@@ -36,6 +36,11 @@ The command is executed with the resource ID as the last argument. If the comman
 
 ### Examples
 
+#### Restart unhealthy containers:
+```sh
+docker bulk container '.State.Status == "running" and .State.Health.Status == "unhealthy"' docker container restart
+```
+
 #### Restart containers that have the Docker daemon socket mounted:
 ```sh
 docker bulk container '.Mounts[].Source == "/var/run/docker.sock"' docker container restart
